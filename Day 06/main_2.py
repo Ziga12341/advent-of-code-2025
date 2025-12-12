@@ -38,14 +38,12 @@ print(count_length_of_biggest_number_in_column(l))
 print(count_length_of_biggest_number_in_column(s))
 
 
-def cut_string(file_name):
+def cut_string_into_numbers_with_spaces(file_name):
     operations, numbers_in_columns = read_lines(file_name)
     cell_length = count_length_of_biggest_number_in_column(file_name)
     count_numbers_in_row = len(operations)
-    print(count_numbers_in_row)
     rearranged_numbers = []
     for line in numbers_in_columns:
-        print(line)
         new_column =  []
         main_index = 0
         # count also " " space between numbers
@@ -54,7 +52,6 @@ def cut_string(file_name):
         for i in range(count_numbers_in_row - 1):
             # print(length)
             length = cell_length[i]
-            print(length)
 
             # index_to_add += 1
             # start_index += index_to_add
@@ -69,8 +66,22 @@ def cut_string(file_name):
         start_index = 0
     return rearranged_numbers
         
-print(cut_string(l))
+print(cut_string_into_numbers_with_spaces(l))
 
+def remap_numbers_in_right_list(file_name):
+    numbers_in_list = cut_string_into_numbers_with_spaces(file_name)
+    new_order_list = []
+    
+    for i in range(len(numbers_in_list[0])):
+        rearranged_list = []
+        for j in range(len(numbers_in_list)):
+            rearranged_list.append(numbers_in_list[j][i])
+        new_order_list.append(rearranged_list)
+        rearranged_list = []
+
+    return new_order_list
+
+print(remap_numbers_in_right_list(s))
 # rows to columns
 def columns_into_list(file_name):
     operations, numbers_in_columns = read_lines(file_name)
