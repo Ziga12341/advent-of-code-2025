@@ -81,29 +81,12 @@ def remap_numbers_in_right_list(file_name):
 
     return new_order_list
 
-print(remap_numbers_in_right_list(s))
-# rows to columns
-def columns_into_list(file_name):
-    operations, numbers_in_columns = read_lines(file_name)
-    new_order_column_to_row = []
-    grand_total = 0
-    for i, operation in enumerate(operations):
-        column_to_row = []
-        for j in range(len(numbers_in_columns)):
-            # this is main part to put numbers in right list...
-            column_to_row.append(numbers_in_columns[j][i])
-
-        new_order_column_to_row.append(column_to_row)
-        column_to_row = []
-    return new_order_column_to_row
-
-print(columns_into_list(s))
+print("this put rows to columns", remap_numbers_in_right_list(s))
 
 def index_of_spaces(file_name: str):
     with open(file_name, "r", encoding="utf-8") as file:
         lines_to_list = [line.strip() for line in file]
         numbers_in_row = len([operation for operation in lines_to_list[-1].strip().split(" ") if operation != ""])
-        print(numbers_in_row)
         i = 0
         space_index = set()
         for column in lines_to_list[:-1]:
@@ -127,33 +110,109 @@ def not_split(file_name: str):
                 start_index = 0
                 end_index = colum_length
                 # print(column[:3])
+                ...
 
+def transform_rows_to_columns(list_of_one_column):
+    list_max_number_size = len(max(list_of_one_column))
+    new_transformed_list = []
+    # how to detect on which side is " "
+    for j in range(list_max_number_size):
 
+        new_number = ""
+        for i, number in enumerate(list_of_one_column):
+            new_number += number[j]
+        new_transformed_list.append(new_number)
+        new_number = ""
 
-# put columns into one list
-def columns_into_list(file_name):
-    operations, numbers_in_columns = read_lines(file_name)
-    new_order_column_to_row = []
+    return new_transformed_list
+
+print(transform_rows_to_columns(['123', ' 45', '  6']))
+print(transform_rows_to_columns(['328', '64 ', '98 ']))
+print(transform_rows_to_columns([' 51', '387', '215']))
+
+def transform_string_numbers_to_int(list_of_column):
+    int_column = []
+    for string_number in list_of_column:
+        string_number = string_number.replace(" ", "")
+        number = int(string_number)
+        int_column.append(number)
+    return int_column
+
+print(transform_string_numbers_to_int(['1  ', '24 ', '356']))
+def multiply_vertical_list(vertical_list: list[int]):
+    multiplication = 1
+    for number in vertical_list:
+        multiplication *= number
+    return multiplication
+
+"""
+64
+23
+314
+----
+read from right to left each digit is own column (read column from top to 
+4 + 431 + 623 = 1058
+"""
+
+def convert_to_string(file_name):
     grand_total = 0
-    for i, operation in enumerate(operations):
-        column_to_row = []
-        for j in range(len(numbers_in_columns)):
-            # this is main part to put numbers in right list...
-            column_to_row.append(numbers_in_columns[j][i])
+    new_order_column_to_row = remap_numbers_in_right_list(file_name)
+    operations, _ = read_lines(file_name)
 
-        new_order_column_to_row.append("".join(column_to_row))
-        column_to_row = []
-    return new_order_column_to_row
+    for i, column in enumerate(new_order_column_to_row):
+        # multiplication or sum
+        operation = operations[i]
 
-print(columns_into_list(s))
-#this is regex problem... 
-"""
-od 1 do n srevilk
-en presledek prej en potem
-ce je kaj vec presledkov jih moras vzeti k temu...
+        column = [str(number) for number in column]
+        collect_1st_number = ""
+        collect_2nd_number = ""
+        collect_3th_number = ""
+        collect_4th_number = ""
 
-"""
+        for number in column:
+            str_number = str(number)
+            if len(str_number) == 4:
+                collect_1st_number += str_number[0]
+                collect_2nd_number += str_number[1]
+                collect_3th_number += str_number[2]
+                collect_4th_number += str_number[3]
 
-print(not_split(s))
-print(index_of_spaces(l))
-# print(index_of_spaces(s))
+            if len(str_number) == 3:
+                collect_2nd_number += str_number[0]
+                collect_3th_number += str_number[1]
+                collect_4th_number += str_number[2]
+
+            if len(str_number) == 2:
+                collect_3th_number += str_number[0]
+                collect_4th_number += str_number[1]
+
+            if len(str_number) == 1:
+                collect_4th_number += str_number[0]
+
+        collect_numbers_in_list = []
+        if collect_1st_number != "":
+            first = int(collect_1st_number)
+            collect_numbers_in_list.append(first)
+
+        if collect_2nd_number != "":
+            second = int(collect_2nd_number)
+            collect_numbers_in_list.append(second)
+
+        if collect_3th_number != "":
+            third = int(collect_3th_number)
+            collect_numbers_in_list.append(third)
+
+        if collect_4th_number != "":
+            fourth = int(collect_4th_number)
+            collect_numbers_in_list.append(fourth)
+
+
+        if operation == "*":
+            grand_total += multiply_vertical_list(collect_numbers_in_list)
+        else:
+            grand_total += sum(collect_numbers_in_list)
+
+        collect_numbers_in_list = []
+    return grand_total
+
+print(convert_to_string(s))
