@@ -139,6 +139,8 @@ def transform_string_numbers_to_int(list_of_column):
     return int_column
 
 print(transform_string_numbers_to_int(['1  ', '24 ', '356']))
+print(transform_string_numbers_to_int(transform_rows_to_columns(['123', ' 45', '  6'])))
+
 def multiply_vertical_list(vertical_list: list[int]):
     multiplication = 1
     for number in vertical_list:
@@ -154,7 +156,7 @@ read from right to left each digit is own column (read column from top to
 4 + 431 + 623 = 1058
 """
 
-def convert_to_string(file_name):
+def part_2(file_name):
     grand_total = 0
     new_order_column_to_row = remap_numbers_in_right_list(file_name)
     operations, _ = read_lines(file_name)
@@ -162,57 +164,27 @@ def convert_to_string(file_name):
     for i, column in enumerate(new_order_column_to_row):
         # multiplication or sum
         operation = operations[i]
-
-        column = [str(number) for number in column]
-        collect_1st_number = ""
-        collect_2nd_number = ""
-        collect_3th_number = ""
-        collect_4th_number = ""
-
-        for number in column:
-            str_number = str(number)
-            if len(str_number) == 4:
-                collect_1st_number += str_number[0]
-                collect_2nd_number += str_number[1]
-                collect_3th_number += str_number[2]
-                collect_4th_number += str_number[3]
-
-            if len(str_number) == 3:
-                collect_2nd_number += str_number[0]
-                collect_3th_number += str_number[1]
-                collect_4th_number += str_number[2]
-
-            if len(str_number) == 2:
-                collect_3th_number += str_number[0]
-                collect_4th_number += str_number[1]
-
-            if len(str_number) == 1:
-                collect_4th_number += str_number[0]
-
-        collect_numbers_in_list = []
-        if collect_1st_number != "":
-            first = int(collect_1st_number)
-            collect_numbers_in_list.append(first)
-
-        if collect_2nd_number != "":
-            second = int(collect_2nd_number)
-            collect_numbers_in_list.append(second)
-
-        if collect_3th_number != "":
-            third = int(collect_3th_number)
-            collect_numbers_in_list.append(third)
-
-        if collect_4th_number != "":
-            fourth = int(collect_4th_number)
-            collect_numbers_in_list.append(fourth)
-
+        
+        ints_in_column_in_right_order = transform_string_numbers_to_int(transform_rows_to_columns(column))
 
         if operation == "*":
-            grand_total += multiply_vertical_list(collect_numbers_in_list)
+            grand_total += multiply_vertical_list(ints_in_column_in_right_order)
         else:
-            grand_total += sum(collect_numbers_in_list)
+            grand_total += sum(ints_in_column_in_right_order)
 
-        collect_numbers_in_list = []
     return grand_total
 
-print(convert_to_string(s))
+print(part_2(s))
+
+
+
+def test_part_2():
+    assert part_2(s) == 3263827
+
+# too high
+# 9675710241167
+
+if __name__ == "__main__":
+    small_input = read_lines(s)
+    large_input = read_lines(l)
+    print("Second part: ", part_2(l))
