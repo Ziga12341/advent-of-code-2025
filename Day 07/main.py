@@ -70,9 +70,44 @@ def part_1(file_name):
                     next_candidates.append((next_move_x_right, next_move_y, next_move_char))
     return count_splitters
 
+# location (x, y) where char is not "."
+def get_all_splitters_and_start_coordinates(file_name):
+    all_coordinates_with_char = get_coordinates_with_char(file_name)
+    return [(x, y, char) for x, y, char in all_coordinates_with_char if char != "."]
 
 def part_2(file_name):
-    ...
+    quantum_time_splitter_candidates = []
+    all_splitters_and_start = get_all_splitters_and_start_coordinates(file_name)
+    
+    all_locations = get_coordinates_with_char(file_name)
+    tachyon_manifold_height = max([y for x, y, char in all_locations])
+    
+    while all_splitters_and_start:
+        x, y, char = all_splitters_and_start.pop(0)
+        print(x,y,char)
+        # go down for i from each splitter to check if there we hit another splitter
+        right = x + 1
+        left = x - 1
+        for i in range(tachyon_manifold_height - y):
+            # check if we hit next splitter from left side
+            right_beam = right, y + i
+            left_beam = left, y + i
+            # # need to check symbol/char in new location!
+            # get_char_from_location(file_name, 
+            # if right_beam == (9, 14) or left_beam == (9, 14):
+            #     print("something wrong")
+            if left_beam in all_splitters_and_start:
+                if left_beam not in quantum_time_splitter_candidates:
+                    quantum_time_splitter_candidates.append(left_beam)
+                    break
+            if right_beam in all_splitters_and_start:
+                if right_beam not in quantum_time_splitter_candidates:
+                    quantum_time_splitter_candidates.append(right_beam)
+                    break
+    print(quantum_time_splitter_candidates)
+    return len(quantum_time_splitter_candidates)  * 2
+
+print(part_2(s))
 
 
 def test_part_1():
@@ -80,7 +115,7 @@ def test_part_1():
 
 
 def test_part_2():
-    assert part_2(s) == None
+    assert part_2(s) == 40
 
 
 if __name__ == "__main__":
