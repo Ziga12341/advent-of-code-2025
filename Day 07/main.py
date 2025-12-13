@@ -85,26 +85,38 @@ def part_2(file_name):
     while all_splitters_and_start:
         x, y, char = all_splitters_and_start.pop(0)
         print(x,y,char)
+        # left first!
         # go down for i from each splitter to check if there we hit another splitter
-        right = x + 1
         left = x - 1
-        for i in range(tachyon_manifold_height - y):
+        for left_index in range(tachyon_manifold_height - y):
             # check if we hit next splitter from left side
-            right_beam = right, y + i
-            left_beam = left, y + i
-            # # need to check symbol/char in new location!
-            # get_char_from_location(file_name, 
-            # if right_beam == (9, 14) or left_beam == (9, 14):
-            #     print("something wrong")
-            if left_beam in all_splitters_and_start:
-                if left_beam not in quantum_time_splitter_candidates:
-                    quantum_time_splitter_candidates.append(left_beam)
-                    break
-            if right_beam in all_splitters_and_start:
-                if right_beam not in quantum_time_splitter_candidates:
-                    quantum_time_splitter_candidates.append(right_beam)
-                    break
-    print(quantum_time_splitter_candidates)
+            new_left_x, new_left_y = left, y + left_index
+            # get new char for each location 
+            new_char = get_char_from_location(file_name, new_left_x, new_left_y)
+            if  (new_left_x, new_left_y, new_char) in all_splitters_and_start:
+                if (new_left_x, new_left_y) not in quantum_time_splitter_candidates:
+                    quantum_time_splitter_candidates.append((new_left_x, new_left_y))
+
+            # need to check symbol/char in new location is "^" then we should not continue to move Y
+            if new_char == "^":
+                # break adding one to y because we hit splitter
+                break                
+        
+        # Then right side
+        # split left and right side on each loop
+        right = x + 1
+        for right_index in range(tachyon_manifold_height - y):
+            new_right_x, new_right_y = right, y + right_index
+            # get new char for each location 
+            new_char = get_char_from_location(file_name,  new_left_x, new_left_y)
+            if (new_right_x, new_right_y) in all_splitters_and_start:
+                if (new_right_x, new_right_y, new_char) not in quantum_time_splitter_candidates:
+                    quantum_time_splitter_candidates.append((new_right_x, new_right_y))
+            if new_char == "^":
+                # break adding one to y because we hit splitter
+                break
+                
+        print(quantum_time_splitter_candidates)
     return len(quantum_time_splitter_candidates)  * 2
 
 print(part_2(s))
