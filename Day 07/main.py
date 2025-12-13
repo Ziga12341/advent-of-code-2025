@@ -81,14 +81,15 @@ def part_2(file_name):
     
     starting_point_with_location = [(x, y, char) for x, y, char in all_locations if char == "S"][0]
     x0, y0, _ = starting_point_with_location
-    quantum_time_splitter_candidates = [(x0, y0 + 2)]
+    # remove starting position from quantum
+    quantum_time_splitter_candidates = []
     all_splitters_and_start = get_all_splitters_and_start_coordinates(file_name)
     
 
     
     while all_splitters_and_start:
         x, y, char = all_splitters_and_start.pop(0)
-        print(x,y,char)
+        # print(x,y,char)
         # left first!
         # go down for i from each splitter to check if there we hit another splitter
         left = x - 1
@@ -114,13 +115,13 @@ def part_2(file_name):
             # get new char for each location 
             new_char_right = get_char_from_location(file_name,  new_right_x, new_right_y)
             if (new_right_x, new_right_y, new_char_right) in all_splitters_and_start:
-                if (new_right_x, new_right_y, new_char_right) not in quantum_time_splitter_candidates:
+                if (new_right_x, new_right_y) not in quantum_time_splitter_candidates:
                     quantum_time_splitter_candidates.append((new_right_x, new_right_y))
             if new_char_right == "^":
                 # break adding one to y because we hit splitter
                 break
                 
-        print(quantum_time_splitter_candidates)
+        # print(quantum_time_splitter_candidates)
     return len(quantum_time_splitter_candidates)  * 2
 
 print(part_2(s))
@@ -138,5 +139,8 @@ if __name__ == "__main__":
     small_input = read_lines(s)
     large_input = read_lines(l)
     print(small_input)
-    print("First part: ", part_1(l))
-    # print("Second part: ", part_2(l))
+    # print("First part: ", part_1(l))
+    print("Second part: ", part_2(l))
+
+
+# 4032 too low
