@@ -70,17 +70,21 @@ def part_1(file_name):
                     next_candidates.append((next_move_x_right, next_move_y, next_move_char))
     return count_splitters
 
-# location (x, y) where char is not "."
+# location (x, y) where char is "^" exclude S
 def get_all_splitters_and_start_coordinates(file_name):
     all_coordinates_with_char = get_coordinates_with_char(file_name)
-    return [(x, y, char) for x, y, char in all_coordinates_with_char if char != "."]
+    return [(x, y, char) for x, y, char in all_coordinates_with_char if char == "^"]
 
 def part_2(file_name):
-    quantum_time_splitter_candidates = []
-    all_splitters_and_start = get_all_splitters_and_start_coordinates(file_name)
-    
     all_locations = get_coordinates_with_char(file_name)
     tachyon_manifold_height = max([y for x, y, char in all_locations])
+    
+    starting_point_with_location = [(x, y, char) for x, y, char in all_locations if char == "S"][0]
+    x0, y0, _ = starting_point_with_location
+    quantum_time_splitter_candidates = [(x0, y0 + 2)]
+    all_splitters_and_start = get_all_splitters_and_start_coordinates(file_name)
+    
+
     
     while all_splitters_and_start:
         x, y, char = all_splitters_and_start.pop(0)
@@ -92,13 +96,13 @@ def part_2(file_name):
             # check if we hit next splitter from left side
             new_left_x, new_left_y = left, y + left_index
             # get new char for each location 
-            new_char = get_char_from_location(file_name, new_left_x, new_left_y)
-            if  (new_left_x, new_left_y, new_char) in all_splitters_and_start:
+            new_char_left = get_char_from_location(file_name, new_left_x, new_left_y)
+            if  (new_left_x, new_left_y, new_char_left) in all_splitters_and_start:
                 if (new_left_x, new_left_y) not in quantum_time_splitter_candidates:
                     quantum_time_splitter_candidates.append((new_left_x, new_left_y))
 
             # need to check symbol/char in new location is "^" then we should not continue to move Y
-            if new_char == "^":
+            if new_char_left == "^":
                 # break adding one to y because we hit splitter
                 break                
         
@@ -108,11 +112,11 @@ def part_2(file_name):
         for right_index in range(tachyon_manifold_height - y):
             new_right_x, new_right_y = right, y + right_index
             # get new char for each location 
-            new_char = get_char_from_location(file_name,  new_left_x, new_left_y)
-            if (new_right_x, new_right_y) in all_splitters_and_start:
-                if (new_right_x, new_right_y, new_char) not in quantum_time_splitter_candidates:
+            new_char_right = get_char_from_location(file_name,  new_right_x, new_right_y)
+            if (new_right_x, new_right_y, new_char_right) in all_splitters_and_start:
+                if (new_right_x, new_right_y, new_char_right) not in quantum_time_splitter_candidates:
                     quantum_time_splitter_candidates.append((new_right_x, new_right_y))
-            if new_char == "^":
+            if new_char_right == "^":
                 # break adding one to y because we hit splitter
                 break
                 
@@ -135,4 +139,4 @@ if __name__ == "__main__":
     large_input = read_lines(l)
     print(small_input)
     print("First part: ", part_1(l))
-    print("Second part: ", part_2(l))
+    # print("Second part: ", part_2(l))
