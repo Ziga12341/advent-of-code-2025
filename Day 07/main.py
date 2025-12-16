@@ -119,6 +119,7 @@ def part_2(file_name, x, y):
 
 def test_part_1():
     assert part_1(s) == 21
+    assert part_1(l) == 1570
 
 
 def test_part_2():
@@ -133,9 +134,5 @@ if __name__ == "__main__":
     large_input = read_lines(l)
     print(small_input)
     print("First part: ", part_1(l))
-    print("Second part: ", part_2(l))
+    print("Second part: ", part_2(l, 70, 0))
 
-# 4032 too low
-# 6384 too low
-# ni pravi: 44011029008
-# ni pravi: 6656981666168
