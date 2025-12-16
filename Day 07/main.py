@@ -1,6 +1,8 @@
-from idlelib.debugobj_r import remote_object_tree_item
+from functools import lru_cache
 
 s = "small_input.txt"
+s_2 = "small_input_2.txt"
+s_3 = "small_input_3.txt"
 l = "input.txt"
 
 
@@ -70,23 +72,23 @@ def part_1(file_name):
                     next_candidates.append((next_move_x_right, next_move_y, next_move_char))
     return count_splitters
 
+
 # location (x, y) where char is "^" exclude S
 def get_all_splitters_and_start_coordinates(file_name):
     all_coordinates_with_char = get_coordinates_with_char(file_name)
     return [(x, y, char) for x, y, char in all_coordinates_with_char if char == "^"]
 
+
 def part_2(file_name):
     all_locations = get_coordinates_with_char(file_name)
     tachyon_manifold_height = max([y for x, y, char in all_locations])
-    
+
     starting_point_with_location = [(x, y, char) for x, y, char in all_locations if char == "S"][0]
     x0, y0, _ = starting_point_with_location
     # remove starting position from quantum
     quantum_time_splitter_candidates = []
     all_splitters_and_start = get_all_splitters_and_start_coordinates(file_name)
-    
 
-    
     while all_splitters_and_start:
         x, y, char = all_splitters_and_start.pop(0)
         # print(x,y,char)
@@ -98,33 +100,152 @@ def part_2(file_name):
             new_left_x, new_left_y = left, y + left_index
             # get new char for each location 
             new_char_left = get_char_from_location(file_name, new_left_x, new_left_y)
-            if  (new_left_x, new_left_y, new_char_left) in all_splitters_and_start:
+            if (new_left_x, new_left_y, new_char_left) in all_splitters_and_start:
                 if (new_left_x, new_left_y) not in quantum_time_splitter_candidates:
                     quantum_time_splitter_candidates.append((new_left_x, new_left_y))
 
             # need to check symbol/char in new location is "^" then we should not continue to move Y
             if new_char_left == "^":
                 # break adding one to y because we hit splitter
-                break                
-        
-        # Then right side
+                break
+
+                # Then right side
         # split left and right side on each loop
         right = x + 1
         for right_index in range(tachyon_manifold_height - y):
             new_right_x, new_right_y = right, y + right_index
             # get new char for each location 
-            new_char_right = get_char_from_location(file_name,  new_right_x, new_right_y)
+            new_char_right = get_char_from_location(file_name, new_right_x, new_right_y)
             if (new_right_x, new_right_y, new_char_right) in all_splitters_and_start:
                 if (new_right_x, new_right_y) not in quantum_time_splitter_candidates:
                     quantum_time_splitter_candidates.append((new_right_x, new_right_y))
             if new_char_right == "^":
                 # break adding one to y because we hit splitter
                 break
-                
-        # print(quantum_time_splitter_candidates)
-    return len(quantum_time_splitter_candidates)  * 2
 
-print(part_2(s))
+        # print(quantum_time_splitter_candidates)
+    return len(quantum_time_splitter_candidates) * 2
+
+
+def beam_escape_tachyon_manifolds(file_name, x, y):
+    tachyon_manifold_height = len(read_lines(file_name))
+    new_y = y
+    for i in range(1, tachyon_manifold_height - y):
+        new_y = y + i
+        # get new char for each location 
+        new_char = get_char_from_location(file_name, x, new_y)
+        # need to check symbol/char in new location is "^" then we should not continue to move Y
+        if new_char == "^":
+            # break adding one to y because we hit splitter
+            return False, new_y
+    return True, new_y
+
+
+print(beam_escape_tachyon_manifolds(s, 7, 0))
+print(beam_escape_tachyon_manifolds(s, 7, 14))
+
+
+def get_location_of_next_spitters(file_name, x, y):
+    tachyon_manifold_height = len(read_lines(file_name))
+    new_y = y
+    left_x = x - 1
+    right_x = x + 1
+    next_splitters_locations = []
+    for i in range(1, tachyon_manifold_height - y):
+        # case where we do not want to go lower on grid because we already have one or two in
+        if len(next_splitters_locations) >= 1:
+            break
+        new_y = y + i
+        # get new char for each location 
+        new_char_left = get_char_from_location(file_name, left_x, new_y)
+        new_char_right = get_char_from_location(file_name, right_x, new_y)
+        # need to check symbol/char in new location is "^" then we should not continue to move Y
+        if new_char_left == "^":
+            next_splitters_locations.append((left_x, new_y))
+        if new_char_right == "^":
+            next_splitters_locations.append((right_x, new_y))
+
+    return next_splitters_locations
+
+
+print(get_location_of_next_spitters(s, 7, 0))
+print(get_location_of_next_spitters(s, 7, 14))
+
+
+# i may need to add lru cache to save locations which I already calculated how many beams leave tachyon manifold
+# ali pa bi moral to napisati bolj optimizirano v smislu da tisti spodnji samo doda zgornjemu kolikor je donu
+def part_2(file_name, x, y):
+    # all_locations = get_coordinates_with_char(file_name)
+    # tachyon_manifold_height = max([y for x, y, char in all_locations])
+    # 
+    # starting_point_with_location = [(x, y, char) for x, y, char in all_locations if char == "S"][0]
+    # x0, y0, _ = starting_point_with_location
+    # 
+    counter = 0
+    count_different_timelines = []
+    next_locations = get_location_of_next_spitters(file_name, x, y)
+    # escape condition
+    print(next_locations)
+    print(counter)
+    if len(next_locations) == 0:
+        return 2
+        # return count_different_timelines
+        # return count_different_timelines
+
+    else:
+        if len(next_locations) == 1:
+            x1, y1 = next_locations[0]
+            counter += part_2(file_name, x1, y1)
+            # return 1
+        else:
+            x1, y1 = next_locations[0]
+            x2, y2 = next_locations[1]
+    
+            # get new location left of splitter
+            counter += part_2(file_name, x1, y1)
+            counter += part_2(file_name, x2, y2)
+            # return count_different_timelines
+    return counter
+
+@lru_cache(maxsize=None)
+def part_2(file_name, x, y):
+    # all_locations = get_coordinates_with_char(file_name)
+    # tachyon_manifold_height = max([y for x, y, char in all_locations])
+    # 
+    # starting_point_with_location = [(x, y, char) for x, y, char in all_locations if char == "S"][0]
+    # x0, y0, _ = starting_point_with_location
+    # 
+    counter = 0
+    count_different_timelines = []
+    next_locations = get_location_of_next_spitters(file_name, x, y)
+    # escape condition
+    # print(next_locations)
+    # print(counter)
+    if len(next_locations) != 2:
+        if len(next_locations) == 1:
+            x0, y0 = next_locations[0]
+            counter +=  part_2(file_name, x0, y0)
+            counter += 1
+            # return 1
+        else:
+            return 2
+
+    else:
+        x1, y1 = next_locations[0]
+        x2, y2 = next_locations[1]
+
+        # get new location left of splitter
+        counter += part_2(file_name, x1, y1)
+        counter += part_2(file_name, x2, y2)
+        # return count_different_timelines
+    return counter
+
+# print(part_2(s_2, 7, 0)) # 8
+# print(part_2(s_3, 7, 0)) # 13
+# print(part_2(s, 7, 0))  # 40
+
+
+print(part_2(l, 70, 0))
 
 
 def test_part_1():
@@ -132,7 +253,9 @@ def test_part_1():
 
 
 def test_part_2():
-    assert part_2(s) == 40
+    assert part_2(s, 7, 0) == 40
+    assert part_2(s_2) == 8
+    assert part_2(s_3) == 13
 
 
 if __name__ == "__main__":
@@ -140,7 +263,7 @@ if __name__ == "__main__":
     large_input = read_lines(l)
     print(small_input)
     # print("First part: ", part_1(l))
-    print("Second part: ", part_2(l))
-
+    # print("Second part: ", part_2(l))
 
 # 4032 too low
+# 6384 too low
