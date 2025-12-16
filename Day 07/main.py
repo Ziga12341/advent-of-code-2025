@@ -170,6 +170,10 @@ def get_location_of_next_spitters(file_name, x, y):
 
 print(get_location_of_next_spitters(s, 7, 0))
 print(get_location_of_next_spitters(s, 7, 14))
+print(get_location_of_next_spitters(s, 9, 10))
+print(get_location_of_next_spitters(s, 11, 10))
+print(get_location_of_next_spitters(s, 6, 12))
+print(get_location_of_next_spitters(s, 9, 6))
 
 
 # i may need to add lru cache to save locations which I already calculated how many beams leave tachyon manifold
@@ -209,23 +213,12 @@ def part_2(file_name, x, y):
 
 @lru_cache(maxsize=None)
 def part_2(file_name, x, y):
-    # all_locations = get_coordinates_with_char(file_name)
-    # tachyon_manifold_height = max([y for x, y, char in all_locations])
-    # 
-    # starting_point_with_location = [(x, y, char) for x, y, char in all_locations if char == "S"][0]
-    # x0, y0, _ = starting_point_with_location
-    # 
     counter = 0
-    count_different_timelines = []
     next_locations = get_location_of_next_spitters(file_name, x, y)
-    # escape condition
-    # print(next_locations)
-    # print(counter)
     if len(next_locations) != 2:
         if len(next_locations) == 1:
             x0, y0 = next_locations[0]
-            counter +=  part_2(file_name, x0, y0)
-            counter += 1
+            return len(next_locations) +  part_2(file_name, x0, y0)
             # return 1
         else:
             return 2
@@ -235,17 +228,16 @@ def part_2(file_name, x, y):
         x2, y2 = next_locations[1]
 
         # get new location left of splitter
-        counter += part_2(file_name, x1, y1)
-        counter += part_2(file_name, x2, y2)
+        return part_2(file_name, x1, y1) + part_2(file_name, x2, y2)
         # return count_different_timelines
-    return counter
+
 
 # print(part_2(s_2, 7, 0)) # 8
 # print(part_2(s_3, 7, 0)) # 13
-# print(part_2(s, 7, 0))  # 40
+print(part_2(s, 7, 0))  # 40
 
 
-print(part_2(l, 70, 0))
+# print(part_2(l, 70, 0))
 
 
 def test_part_1():
@@ -267,3 +259,4 @@ if __name__ == "__main__":
 
 # 4032 too low
 # 6384 too low
+# ni pravi: 44011029008
