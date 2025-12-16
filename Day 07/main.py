@@ -99,17 +99,21 @@ def get_location_of_next_spitters(file_name, x, y):
 @lru_cache(maxsize=None)
 def part_2(file_name, x, y):
     next_locations = get_location_of_next_spitters(file_name, x, y)
-    if len(next_locations) == 1:
+    # if there is not next location than it is last splitter which add 2 possible ways (2 timelines)
+    if len(next_locations) == 0:
+        return 2
+    
+    # if 1 next location of splitter - one beam leave grid other go to next splitter
+    elif len(next_locations) == 1:
         x0, y0 = next_locations[0]
         return 1 + part_2(file_name, x0, y0)
-    elif len(next_locations) == 0:
-        return 2
 
     else:
+        # splitter goes into two new splitters, continue recursion
         x1, y1 = next_locations[0]
         x2, y2 = next_locations[1]
 
-        # get new location left of splitter
+        # get new location left and right of splitter
         return part_2(file_name, x1, y1) + part_2(file_name, x2, y2)
 
 
