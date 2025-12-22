@@ -49,23 +49,59 @@ def sort_boxes_based_on_shortest_distance(file_name: str, number_of_pairs: int =
 
 print(sort_boxes_based_on_shortest_distance(s))
 
+def junction_box_in_circuit(file_name:str, junction_box:tuple[float, tuple[int, int, int],  tuple[int, int, int]]):
+    sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
+    
+    for distance, first_junction_box, second_junction_box in sorted_junction_boxes:
+        if
 
 def part_1(file_name):
     sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
     st_distance, st_first_junction_box, st_second_junction_box = sorted_junction_boxes[0]
+    already_in_circuits = {st_first_junction_box, st_second_junction_box}
     collect_circuits = [{st_first_junction_box, st_second_junction_box}]
     for distance, first_junction_box, second_junction_box in sorted_junction_boxes[1:]:
+        # this last one should connect two bigger circuits: (352.936254867646, (906, 360, 560), (984, 92, 344))
         for i in range(len(collect_circuits)):
             if first_junction_box in collect_circuits[i] or second_junction_box in collect_circuits[i]:
-                collect_circuits[i].add(first_junction_box)
-                collect_circuits[i].add(second_junction_box)
+                if first_junction_box not in already_in_circuits:
+                    collect_circuits[i].add(first_junction_box)
+                if second_junction_box not in already_in_circuits:
+                    collect_circuits[i].add(second_junction_box)
+                
+                already_in_circuits.add(first_junction_box)
+                already_in_circuits.add(second_junction_box)
+        
         # if there is junction box not already in any circuits than ?? add it to new one (bat should i add bouth??
         else:
-            collect_circuits.append({first_junction_box, second_junction_box})
+            for set_of_circuits in collect_circuits:
+                print(set_of_circuits)
+                if len(set_of_circuits.intersection({first_junction_box})) > 0:
+                      
+                
+            if first_junction_box not in already_in_circuits and second_junction_box not in already_in_circuits:
+                collect_circuits.append({first_junction_box, second_junction_box})
+            elif first_junction_box not in already_in_circuits:
+                collect_circuits.append({second_junction_box})
+            elif second_junction_box not in already_in_circuits:
+                collect_circuits.append({first_junction_box})
+            else:
+                print("in else")
+                pass
+                
             # collect_circuits.append({second_junction_box})
-    return collect_circuits
+            already_in_circuits.add(first_junction_box)
+            already_in_circuits.add(second_junction_box)
+    
+    # in order to know if i understand excercise correctly i would like to check this
+    # i need to merge set-s if there is one element in others
+    # this last one should connect two bigger circuits: (352.936254867646, (906, 360, 560), (984, 92, 344))
+    for set_of_circuits in collect_circuits:
+        print(set_of_circuits)
+    
+    return None
 
-
+# need to figure out how to merge two bigger circuits when already created
 print(part_1(s))
 
 
@@ -84,6 +120,6 @@ def test_part_2():
 if __name__ == "__main__":
     small_input = read_lines(s)
     large_input = read_lines(l)
-    print(small_input)
+    # print(small_input)
     # print("First part: ", part_1(l))
     # print("Second part: ", part_2(l))
