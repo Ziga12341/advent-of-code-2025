@@ -171,6 +171,15 @@ def part_1(file_name):
     # take 3 biggest circuits and multiply them together
     return math.prod((sorted([len(circuit) for circuit in circuits_candidates])[::-1][:3]))
 
+
+def part_1(file_name):
+    sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
+    circuits = [{first_junction_box, second_junction_box}  for _, first_junction_box, second_junction_box in sorted_junction_boxes]
+    for junction_box_pair in sorted_junction_boxes:
+        circuits = merge_circuits(circuits, junction_box_pair)
+    # take 3 biggest circuits and multiply them together
+    return math.prod((sorted([len(circuit) for circuit in circuits])[::-1][:3]))
+    
 # need to figure out how to merge two bigger circuits when already created
 print(part_1(s))
 
