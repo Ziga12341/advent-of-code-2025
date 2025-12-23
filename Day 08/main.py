@@ -36,8 +36,9 @@ def calculate_euclidean_distance_for_junction_boxes(file_name: str) -> list[tupl
                     collect_all_junction_box_pair_with_distance.append((distance, first_junction_box, second_junction_box))
     return collect_all_junction_box_pair_with_distance
 
-
+print("this is for small part")
 print(calculate_euclidean_distance_for_junction_boxes(s))
+print(calculate_euclidean_distance_for_junction_boxes(l))
 
 
 def sort_boxes_based_on_shortest_distance(file_name: str, number_of_pairs: int = 1000) -> list[tuple[float, tuple[int, int, int], tuple[int, int, int]]]:
@@ -171,6 +172,9 @@ def part_1(file_name):
     # take 3 biggest circuits and multiply them together
     return math.prod((sorted([len(circuit) for circuit in circuits_candidates])[::-1][:3]))
 
+print("test--- shortest distance")
+print(sort_boxes_based_on_shortest_distance(s))
+print(sort_boxes_based_on_shortest_distance(l))
 
 def part_1(file_name):
     sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
@@ -182,7 +186,7 @@ def part_1(file_name):
     
 # need to figure out how to merge two bigger circuits when already created
 print(part_1(s))
-
+print(part_1(l))
 
 def part_2(file_name):
     ...
