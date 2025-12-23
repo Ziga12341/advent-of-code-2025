@@ -21,7 +21,7 @@ def calculate_euclidean_distance(x_1: int, y_1: int, z_1: int, x_2: int, y_2: in
     return math.sqrt((x_1 - x_2) ** 2 + (y_1 - y_2) ** 2 + (z_1 - z_2) ** 2)
 
 
-def calculate_euclidean_distance_for_junction_boxes(file_name: str) -> list[tuple[float, int, int]]:
+def calculate_euclidean_distance_for_junction_boxes(file_name: str) -> list[tuple[float, tuple[int, int, int], tuple[int, int, int]]]:
     all_junction_boxes_locations: list = read_lines(file_name)
     collect_all_junction_box_pair_with_distance = []
     for first_junction_box in all_junction_boxes_locations[:-1]:
@@ -40,22 +40,72 @@ def calculate_euclidean_distance_for_junction_boxes(file_name: str) -> list[tupl
 print(calculate_euclidean_distance_for_junction_boxes(s))
 
 
-def sort_boxes_based_on_shortest_distance(file_name: str, number_of_pairs: int = 1000) -> list[tuple[float, int, int]]:
+def sort_boxes_based_on_shortest_distance(file_name: str, number_of_pairs: int = 1000) -> list[tuple[float, tuple[int, int, int], tuple[int, int, int]]]:
     if file_name == s:
         number_of_pairs = 10
     pairs_with_distance = calculate_euclidean_distance_for_junction_boxes(file_name)
     return sorted(pairs_with_distance)[:number_of_pairs]
 
-
+print("=========")
 print(sort_boxes_based_on_shortest_distance(s))
 
-def junction_box_in_circuit(file_name:str, junction_box:tuple[float, tuple[int, int, int],  tuple[int, int, int]]):
-    sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
+def merge_circuits(circuits:list[set[tuple[int,int,int]]], junction_box_pair:tuple[float, tuple[int, int, int],  tuple[int, int, int]]):
+    _, first_junction_box, second_junction_box = junction_box_pair
+    new_circuits = circuits
+    first_circuit_to_merge = set()
+    second_circuit_to_merge = set()
     
-    for distance, first_junction_box, second_junction_box in sorted_junction_boxes:
-        if
+    for first_circuit in new_circuits:
+        if first_junction_box in first_circuit:
+            first_circuit_to_merge = first_circuit_to_merge | first_circuit
+            # i think i can break loop after finding first circuit where first jb in
+            # break
+            
+    for second_circuit in new_circuits:
+        if first_circuit_to_merge != second_circuit:
+            if second_junction_box in second_circuit:
+                second_circuit_to_merge = second_circuit_to_merge | second_circuit
+                # break
+                
+    # the first and second circuit should not be the same
+    if first_circuit_to_merge and second_circuit_to_merge and first_circuit_to_merge != second_circuit_to_merge:
+        # append union of first and second circuit, which were removed
+        new_circuits.append(first_circuit_to_merge | second_circuit_to_merge)
+        new_circuits.remove(first_circuit_to_merge)
+        new_circuits.remove(second_circuit_to_merge)
 
-def part_1(file_name):
+        return new_circuits
+    return circuits
+
+print(merge_circuits([
+{(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
+{(739, 650, 466), (906, 360, 560), (805, 96, 715)},
+{(862, 61, 35), (984, 92, 344)},
+{(52, 470, 668), (117, 168, 530)},
+{(941, 993, 340), (819, 987, 18)}
+], (352.936254867646, (906, 360, 560), (984, 92, 344))
+))
+print(merge_circuits([
+{(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
+{(739, 650, 466), (906, 360, 560), (805, 96, 715)},
+{(862, 61, 35), (984, 92, 344)},
+{(52, 470, 668), (117, 168, 530)},
+{(941, 993, 340), (819, 987, 18)}
+], (316.90219311326956, (162, 817, 812), (425, 690, 689))
+))
+
+
+
+"""
+[
+{(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
+{(739, 650, 466), (906, 360, 560), (805, 96, 715)},
+{(862, 61, 35), (984, 92, 344)},
+{(52, 470, 668), (117, 168, 530)},
+{(941, 993, 340), (819, 987, 18)}
+]
+"""
+def get_circuits_candidates(file_name):
     sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
     st_distance, st_first_junction_box, st_second_junction_box = sorted_junction_boxes[0]
     already_in_circuits = {st_first_junction_box, st_second_junction_box}
@@ -74,11 +124,6 @@ def part_1(file_name):
         
         # if there is junction box not already in any circuits than ?? add it to new one (bat should i add bouth??
         else:
-            for set_of_circuits in collect_circuits:
-                print(set_of_circuits)
-                if len(set_of_circuits.intersection({first_junction_box})) > 0:
-                      
-                
             if first_junction_box not in already_in_circuits and second_junction_box not in already_in_circuits:
                 collect_circuits.append({first_junction_box, second_junction_box})
             elif first_junction_box not in already_in_circuits:
@@ -86,20 +131,29 @@ def part_1(file_name):
             elif second_junction_box not in already_in_circuits:
                 collect_circuits.append({first_junction_box})
             else:
-                print("in else")
+                # print("in else")
                 pass
                 
             # collect_circuits.append({second_junction_box})
             already_in_circuits.add(first_junction_box)
             already_in_circuits.add(second_junction_box)
-    
+    return collect_circuits
+
+def part_1(file_name):
+    sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
+    circuits_candidates = get_circuits_candidates(file_name) 
     # in order to know if i understand excercise correctly i would like to check this
     # i need to merge set-s if there is one element in others
     # this last one should connect two bigger circuits: (352.936254867646, (906, 360, 560), (984, 92, 344))
-    for set_of_circuits in collect_circuits:
-        print(set_of_circuits)
+    circuits = []
+    for junction_box in sorted_junction_boxes:
+        if merge_circuits(circuits_candidates, junction_box):
+            circuits_candidates = merge_circuits(circuits_candidates, junction_box)
     
-    return None
+    print(math.prod((sorted([len(circuit) for circuit in circuits_candidates])[::-1][:3])))
+    
+    # take 3 biggest circuits and multiply them together
+    return math.prod((sorted([len(circuit) for circuit in circuits_candidates])[::-1][:3]))
 
 # need to figure out how to merge two bigger circuits when already created
 print(part_1(s))
@@ -121,5 +175,5 @@ if __name__ == "__main__":
     small_input = read_lines(s)
     large_input = read_lines(l)
     # print(small_input)
-    # print("First part: ", part_1(l))
+    print("First part: ", part_1(l))
     # print("Second part: ", part_2(l))
