@@ -77,6 +77,26 @@ def merge_circuits(circuits:list[set[tuple[int,int,int]]], junction_box_pair:tup
         return new_circuits
     return circuits
 
+
+def merge_circuits(circuits:set[set[tuple[int,int,int]]], junction_box_pair:tuple[float, tuple[int, int, int],  tuple[int, int, int]]):
+    _, first_junction_box, second_junction_box = junction_box_pair
+    first_junction_box = set(first_junction_box)
+    second_junction_box = set(second_junction_box)
+    new_circuits = []
+    merged_circuits = set()
+    for circuit in circuits:
+        if first_junction_box in circuit or second_junction_box in circuit:
+            # case where need union (merging circuits)
+            # how to do it what do it what to do it???
+            merged_circuits = merged_circuits | circuit     
+            merged_circuits = merged_circuits | set(tuple(first_junction_box))   
+            merged_circuits = merged_circuits | set(tuple(second_junction_box))   
+        else:
+            # just add current circuit to new circuits
+            new_circuits.append(circuit)
+    new_circuits.append(merged_circuits)
+    return new_circuits
+    
 print(merge_circuits([
 {(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
 {(739, 650, 466), (906, 360, 560), (805, 96, 715)},
