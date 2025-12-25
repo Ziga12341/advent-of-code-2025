@@ -44,14 +44,8 @@ def calculate_euclidean_distance_for_junction_boxes(file_name: str) -> list[
 
 def sort_boxes_based_on_shortest_distance(file_name: str, number_of_pairs: int = 1000) -> list[
     tuple[float, tuple[int, int, int], tuple[int, int, int]]]:
-    if file_name == s:
-        number_of_pairs = 10
     pairs_with_distance = calculate_euclidean_distance_for_junction_boxes(file_name)
     return sorted(pairs_with_distance)[:number_of_pairs]
-
-
-print("=========")
-print(sort_boxes_based_on_shortest_distance(s))
 
 
 def merge_circuits(circuits: list[set[tuple[int, int, int]]],
@@ -71,38 +65,75 @@ def merge_circuits(circuits: list[set[tuple[int, int, int]]],
     return new_circuits
 
 
-print(merge_circuits([
-    {(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
-    {(739, 650, 466), (906, 360, 560), (805, 96, 715)},
-    {(862, 61, 35), (984, 92, 344)},
-    {(52, 470, 668), (117, 168, 530)},
-    {(941, 993, 340), (819, 987, 18)}
-], (352.936254867646, (906, 360, 560), (984, 92, 344))
-))
-print(merge_circuits([
-    {(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
-    {(739, 650, 466), (906, 360, 560), (805, 96, 715)},
-    {(862, 61, 35), (984, 92, 344)},
-    {(52, 470, 668), (117, 168, 530)},
-    {(941, 993, 340), (819, 987, 18)}
-], (316.90219311326956, (162, 817, 812), (425, 690, 689))
-))
+# 
+# print(merge_circuits([
+#     {(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
+#     {(739, 650, 466), (906, 360, 560), (805, 96, 715)},
+#     {(862, 61, 35), (984, 92, 344)},
+#     {(52, 470, 668), (117, 168, 530)},
+#     {(941, 993, 340), (819, 987, 18)}
+# ], (352.936254867646, (906, 360, 560), (984, 92, 344))
+# ))
+# print(merge_circuits([
+#     {(346, 949, 466), (162, 817, 812), (425, 690, 689), (431, 825, 988)},
+#     {(739, 650, 466), (906, 360, 560), (805, 96, 715)},
+#     {(862, 61, 35), (984, 92, 344)},
+#     {(52, 470, 668), (117, 168, 530)},
+#     {(941, 993, 340), (819, 987, 18)}
+# ], (316.90219311326956, (162, 817, 812), (425, 690, 689))
+# ))
+# 
 
-
-def part_1(file_name):
+def get_new_circuits_status_after_n_merge(file_name, number_of_pairs):
     # this is the order junction boxes by distance with number of them you need them
-    sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name)
+    sorted_junction_boxes = sort_boxes_based_on_shortest_distance(file_name, number_of_pairs=number_of_pairs)
     # each connection put in circuits with each other in initial circuits
     circuits = [{first_junction_box, second_junction_box} for _, first_junction_box, second_junction_box in sorted_junction_boxes]
     # with each merging, creating new circuits collection
     for junction_box_pair in sorted_junction_boxes:
         circuits = merge_circuits(circuits, junction_box_pair)
+    # get new circuits status and also get last valid junction box pair 
+    return circuits, sorted_junction_boxes[-1]
+
+
+def part_1(file_name):
+    # results for part 2:
+    # if file_name == s:
+    #     number_of_pairs = 29
+    # else:
+    #     number_of_pairs = 4872
+    if file_name == s:
+        number_of_pairs = 10
+    else:
+        number_of_pairs = 1000
+    circuits, last_from_sorted_junction_boxes = get_new_circuits_status_after_n_merge(file_name, number_of_pairs)
     # take 3 biggest circuits and multiply them together
     return math.prod((sorted([len(circuit) for circuit in circuits])[::-1][:3]))
 
 
 def part_2(file_name):
-    ...
+    # check how many junction boxes positions is in input
+    junction_box_positions = len(read_lines(file_name))
+
+    get_only_one_circuits = True
+    initial_number_with_only_one_circuit = junction_box_positions
+    if file_name == l:
+        # i try where myself first where to look the right results (i did not solve programmatically)
+        initial_number_with_only_one_circuit = 4850
+    while get_only_one_circuits:
+        # get result for number of ordered junction boxes by distance
+        circuits, last_from_sorted_junction_boxes = get_new_circuits_status_after_n_merge(file_name,
+                                                                                          initial_number_with_only_one_circuit)
+        if [len(circuit) for circuit in circuits][0] == junction_box_positions:
+            get_only_one_circuits = False
+        else:
+            initial_number_with_only_one_circuit += 1
+
+    # get last junction box pair in which all junction boxes in one circle - calculate multiplication from x coordinates
+    distance, first_junction_box, second_junction_box = last_from_sorted_junction_boxes
+    x_1, y_1, z_1 = first_junction_box
+    x_2, y_2, z_2 = second_junction_box
+    return x_1 * x_2
 
 
 def test_part_1():
@@ -111,12 +142,25 @@ def test_part_1():
 
 
 def test_part_2():
-    assert part_2(s) == None
+    assert part_2(s) == 25272
+    assert part_2(l) == 2497445
 
 
 if __name__ == "__main__":
     small_input = read_lines(s)
     large_input = read_lines(l)
-    # print(small_input)
+
     print("First part: ", part_1(l))
-    # print("Second part: ", part_2(l))
+    print("Second part: ", part_2(l))
+
+# part 2 too high:
+# 7919740182
+# 4384275632
+
+
+# 4872 ordered junction pair iterated so we have only one circuit
+# 
+#     if file_name == s:
+#         number_of_pairs = 29
+#     else:
+#         number_of_pairs = 4872
