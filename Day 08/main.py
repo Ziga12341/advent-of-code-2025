@@ -38,7 +38,8 @@ def calculate_euclidean_distance_for_junction_boxes(file_name: str) -> list[
             if first_junction_box != second_junction_box:
                 # check if par in but in another order
                 # add optimization to add in set
-                collect_all_junction_box_pair_with_distance.add((distance, first_junction_box, second_junction_box))
+                if (distance, second_junction_box, first_junction_box) not in collect_all_junction_box_pair_with_distance:
+                    collect_all_junction_box_pair_with_distance.add((distance, first_junction_box, second_junction_box))
     return collect_all_junction_box_pair_with_distance
 
 
