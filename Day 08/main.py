@@ -110,7 +110,18 @@ def part_1(file_name):
     # take 3 biggest circuits and multiply them together
     return math.prod((sorted([len(circuit) for circuit in circuits])[::-1][:3]))
 
-
+def find_initial_number_with_one_circuit(file_name):
+    # check how many junction boxes positions is in input
+    junction_box_positions = len(read_lines(file_name))
+    for initial_number_with_only_one_circuit in range(junction_box_positions, junction_box_positions**2):
+        circuits, last_from_sorted_junction_boxes = get_new_circuits_status_after_n_merge(file_name,
+                                                                                          initial_number_with_only_one_circuit)
+        len_of_first_circuit_in_all_circuits = [len(circuit) for circuit in circuits][0]
+        number_of_circuit = len([circuit for circuit in circuits])
+        # only one circuit left
+        if number_of_circuit == 1:
+            ...
+            
 def part_2(file_name):
     # check how many junction boxes positions is in input
     junction_box_positions = len(read_lines(file_name))
@@ -124,7 +135,8 @@ def part_2(file_name):
         # get result for number of ordered junction boxes by distance
         circuits, last_from_sorted_junction_boxes = get_new_circuits_status_after_n_merge(file_name,
                                                                                           initial_number_with_only_one_circuit)
-        if [len(circuit) for circuit in circuits][0] == junction_box_positions:
+        len_of_first_circuit_in_all_circuits = [len(circuit) for circuit in circuits][0]
+        if len_of_first_circuit_in_all_circuits == junction_box_positions:
             get_only_one_circuits = False
         else:
             initial_number_with_only_one_circuit += 1
