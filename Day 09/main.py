@@ -59,6 +59,15 @@ def initial_red_tile_location_bottom_right(file_name: str, x: int, y: int):
     return any(x_0 >= x and y_0 >= y for x_0, y_0 in red_tile_locations)
 
 
+def initial_red_tile_location_bottom_right(file_name: str, x: int, y: int):
+    red_tile_locations = read_lines(file_name)
+    # if any red tile location is more bottom and right from input x, y point
+    for x_0, y_0 in red_tile_locations:
+        if x_0 >= x and y_0 >= y:
+            return True
+    return False
+
+
 print(initial_red_tile_location_bottom_right(s, 11, 5))
 
 
@@ -78,8 +87,20 @@ def initial_red_tile_location_top_left(file_name: str, x: int, y: int):
     return any(x_0 <= x and y_0 <= y for x_0, y_0 in red_tile_locations)
 
 
+def initial_red_tile_location_top_left(file_name: str, x: int, y: int):
+    red_tile_locations = read_lines(file_name)
+    # if any red tile location is more top and left from input x, y point
+    for x_0, y_0 in red_tile_locations:
+        if x_0 <= x and y_0 <= y:
+            return True
+    return False
+
+
 print(initial_red_tile_location_top_left(s, 2, 1))
 print(initial_red_tile_location_top_left(s, 2, 3))
+# (4618517036, (16587, 15444), (83238, 84736), 'FIRST TOP LEFT')
+print("test first input top left on big input: ", initial_red_tile_location_top_left(l, 16587, 15444))
+print("test second input bottom right on big input: ", initial_red_tile_location_bottom_right(l, 83238, 84736))
 
 
 # from each rectangle point I will get the opposite points from other corners which do not have red tiles
@@ -118,12 +139,14 @@ def part_2(file_name):
             if y_1 > y_2:
                 # first is right and down (bottom right)
                 # check first for this location and also second for opposite (diagonal) location
-                if initial_red_tile_location_bottom_right(file_name,x_1, y_1) and initial_red_tile_location_top_left(file_name, x_2, y_2):
+                if initial_red_tile_location_bottom_right(file_name, x_1, y_1) and initial_red_tile_location_top_left(file_name,
+                                                                                                                      x_2, y_2):
                     # add this location as also valid in new area (inside red and green tiles)
                     new_valid_locations.add((area, first_mirror_location, second_mirror_location, "FIRST BOTTOM RIGHT"))
             else:
                 # first right and up (top right)
-                if initial_red_tile_location_top_right(file_name, x_1, y_1) and initial_red_tile_location_bottom_left(file_name, x_2, y_2):
+                if initial_red_tile_location_top_right(file_name, x_1, y_1) and initial_red_tile_location_bottom_left(file_name,
+                                                                                                                      x_2, y_2):
                     new_valid_locations.add((area, first_mirror_location, second_mirror_location, "FIRST TOP RIGHT"))
 
         elif x_1 < x_2:
@@ -131,16 +154,18 @@ def part_2(file_name):
             if y_1 > y_2:
                 # first is left and down (bottom left)
                 # second in opposite diagonal site top left
-                if initial_red_tile_location_bottom_left(file_name, x_1, y_1) and initial_red_tile_location_top_right(file_name, x_2, y_2):
+                if initial_red_tile_location_bottom_left(file_name, x_1, y_1) and initial_red_tile_location_top_right(file_name,
+                                                                                                                      x_2, y_2):
                     new_valid_locations.add((area, first_mirror_location, second_mirror_location, "FIRST BOTTOM LEFT"))
 
             else:
                 # first left and up (top left)
                 # second diagonale right bottom
-                if initial_red_tile_location_top_left(file_name, x_1, y_1) and initial_red_tile_location_bottom_right(file_name, x_2, y_2):
+                if initial_red_tile_location_top_left(file_name, x_1, y_1) and initial_red_tile_location_bottom_right(file_name,
+                                                                                                                      x_2, y_2):
                     new_valid_locations.add((area, first_mirror_location, second_mirror_location, "FIRST TOP LEFT"))
 
-    print(sorted(new_valid_locations))  
+    print(sorted(new_valid_locations))
     return sorted(new_valid_locations)[-1][0]
 
 
