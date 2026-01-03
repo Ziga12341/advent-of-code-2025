@@ -129,6 +129,111 @@ def mirror_all_rectangle_points(file_name):
 
 print(sorted(mirror_all_rectangle_points(s)))
 
+# ----- new implementation -----
+print("new implementation")
+def get_three_points_for_each_step(file_name):
+    all_points = read_lines(file_name)
+    three_points_for_each_step = []
+    for i in range(len(all_points) - 2):
+        three_points_for_each_step.append((all_points[i],all_points[i + 1], all_points[i + 2]))
+    return three_points_for_each_step
+
+print(get_three_points_for_each_step(s))
+
+# buggy implementation
+def get_x_and_y_length_and_direction(file_name):
+    three_points_for_step = get_three_points_for_each_step(file_name)
+    length_and_direction = []
+    for first_point, second_point, third_point in three_points_for_step:
+        x1, y1 = first_point
+        x2, y2 = second_point
+        x3, y3 = third_point
+        
+        # get reference for second point
+        
+        # horizontal line "|"
+        if x1 == x2:
+            length = abs(y1 - y2)
+            # if y2 is bigger the directions between point 1 and point 2 is from top to down
+            if y2 > y1:
+                point_1_point_2_direction = "down"
+            else:
+                point_1_point_2_direction = "up"
+            # if x3 bigger than x2 from point 2 to point 3 goes right
+            if x3 > x2:
+                point_2_point_3_direction = "right"
+            else:
+                point_2_point_3_direction = "left"
+        # horizontal line between second and third_point
+        elif x2 == x3:
+            length = abs(x1 - x2)
+            # if y3 is bigger the directions between point 1 and point 2 is from top to down
+            if y3 > y2:
+                point_2_point_3_direction = "down"
+            else:
+                point_2_point_3_direction = "up"
+            if x2 > x1:
+                point_1_point_2_direction = "right"
+            else:
+                point_1_point_2_direction = "left"
+        # vertical line "-" (between first and second point)
+        elif y1 == y2:
+            length = abs(x1 - x2)
+            if x2 > x1:
+                point_1_point_2_direction = "right"
+            else:
+                point_1_point_2_direction = "left"
+            
+            # case where line between paint 2 and point 3 goes down
+            if y3 > y2:
+                point_2_point_3_direction = "down"
+            else:
+                point_2_point_3_direction = "up"
+        
+        # vertical line between second and third_point ("-")
+        elif y2 == y3:
+            length = abs(y1 - y2)
+            # if y3 is bigger, the directions between point 1 and point 2 is from top to down
+            if x3 > x2:
+                point_2_point_3_direction = "right"
+            else:
+                point_2_point_3_direction = "left"
+            if y2 > y1:
+                point_1_point_2_direction = "down"
+            else:
+                point_1_point_2_direction = "up"
+        
+        length_and_direction.append((length, second_point, point_1_point_2_direction, point_2_point_3_direction, (first_point, second_point, third_point)))
+    
+    return length_and_direction
+print(get_x_and_y_length_and_direction(s))
+
+def find_top_five_length(file_name):
+    return sorted(get_x_and_y_length_and_direction(file_name))[-5:][::-1]
+print(find_top_five_length(s))
+
+print(find_top_five_length(l))
+for line in find_top_five_length(l):
+    print(line)
+
+# part 2 solution explained for large input - not programmatically solved
+
+# from find_top_five_length() you get candidates for biggest x or y difference between two points
+# in my case there small and lagre input has biggest difference in x direction "-"
+# in both cases there is clockwise "path" of red tiles
+# from get_x_and_y_length_and_direction() you see point 1 and 2 direction n and point 2 and 3 direction
+# now you know that from which two points you need to look for biggest area
+# first ypu check from middle point if you need ot look up or down
+# middle point with point difference: 92536 is (94901, 50265)
+# check first how much room you need to go down : take only points that are more to right form this point and down
+# the more far point in y is (94907, 68050)
+# this give us room 17785
+# find point on the other sice with smaller y (4837, 34263)
+# now you calculate area between those points... and you get the right result
+
+print("end of new implementation")
+# ----- new implementation -----
+
 
 # check if any red tiles is in area more to outside (left and up) of current opposite / mirror point
 def part_2(file_name):
