@@ -9,8 +9,18 @@ def read_lines(file_name: str) -> list:
 
 def calculate_rectangle_area(x_1: int, y_1: int, x_2: int, y_2: int):
     return (abs(x_1 - x_2) + 1) * (abs(y_1 - y_2) + 1)
+# up zgorni predel
+print("nice try part 2 up", calculate_rectangle_area(4837,34263,94901,48488))
+# 4837,34263
+# 94901,48488
+# rezultat: 1281264690
+# check down:
+print("nice try part 2 down", calculate_rectangle_area(5921,67692,94901,50265))
 
-
+# 5921,67692
+# 94901,50265
+#  rezultat: 1550760868
+# vec na spodnjo!
 def each_red_corner_with_corner_area_calculation(file_name):
     collect_all_corner_combinations = set()
     all_red_tile_locations = read_lines(file_name)
@@ -169,6 +179,7 @@ def part_2(file_name):
     return sorted(new_valid_locations)[-1][0]
 
 
+
 def test_part_1():
     assert calculate_rectangle_area(2, 5, 11, 1) == 50
     assert calculate_rectangle_area(7, 3, 2, 3) == 6
@@ -179,6 +190,7 @@ def test_part_1():
 
 def test_part_2():
     assert part_2(s) == 24
+    assert part_2(l) == 1550760868
 
 
 if __name__ == "__main__":
@@ -187,10 +199,13 @@ if __name__ == "__main__":
     print(small_input)
     print("First part: ", part_1(l))
     print("Second part small: ", part_2(s))
-    print("Second part: ", part_2(l))
+    # print("Second part: ", part_2(l))
 
 # part 2 too low:
 # 93243 - result not correct for case if rectangle is in one line only
 
 # part 2 too high:
 # 4618517036
+
+# part 2 fail:
+# 1281264690
