@@ -54,7 +54,8 @@ def compare_initial_indication_lights_with_turn_on_from_shema_combination(initia
     for button in one_combination_of_button_shema:
         for lights_on in button:
             dynamic_shema_indicator_lights[lights_on] += 1
-    # if odd number on particular light return False if even make this light True (turn on)
+    # if odd number on particular light return True if even make this light False (turn on)
+    # if we get the same as initial indicator return True
     return [light_number % 2 != 0 for light_number in dynamic_shema_indicator_lights] == initial_indicator_lights
 
 
@@ -80,7 +81,7 @@ def test_part_1():
 
 
 def test_part_2():
-    assert part_2(s) == None
+    assert part_2(s) == 33
 
 
 if __name__ == "__main__":
