@@ -20,12 +20,11 @@ def find_path(file_name, start:str):
     if devices_dictionary[start].__contains__(start):
         return 1
     else:
-        for one_path in devices_dictionary[start]:
-            find_path(file_name, one_path)
+        return 1 + sum([find_path(file_name, one_path) for one_path in devices_dictionary[start]])
 
 print(find_path(l, "you"))
 def part_1(file_name):
-    ...
+    return find_path(file_name, "you") / 3 
 
 
 def part_2(file_name):
