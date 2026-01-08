@@ -1,6 +1,8 @@
 from collections import defaultdict
+from functools import lru_cache
 
 s = "small_input.txt"
+s2 = "small_input_part_2.txt"
 l = "input.txt"
 
 
@@ -25,8 +27,55 @@ def part_1(file_name, start: str = "you"):
         return sum([part_1(file_name, one_path) for one_path in devices_dictionary[start]])
 
 
-def part_2(file_name):
-    ...
+# 
+# def svr_to_out_path(file_name, start: str = "svr"):
+#     print(start)
+#     devices_dictionary = read_lines(file_name)
+#     # check if key "out" in set() (return one)
+#     
+#     if devices_dictionary[start].__contains__("out"):
+#         return [start]
+#     else:
+#         return [start] + [svr_to_out_path(file_name, one_path) for one_path in devices_dictionary[start]]
+
+# def svr_to_out_path(file_name, path: list = ["svr"]):
+#     print(path)
+#     devices_dictionary = read_lines(file_name)
+#     # check if key "out" in set() (return one)
+#     
+#     if path[-1] == "out":
+#         return path
+#     else: 
+#         return path + [svr_to_out_path(file_name, devices_dictionary[path[-1][0]])]
+# 
+# print(svr_to_out_path(s2))
+
+
+# i want to add cashing for path already known from one point...
+# @lru_cache(maxsize=None)
+def part_2(file_name, start: str = "svr", step=0, visited=['svr']):
+    devices_dictionary = read_lines(file_name)
+    print("step,", step)
+    print("visited", visited)
+    print("start", start)
+    print("dict start: ", devices_dictionary[start])
+    # check if key "out" in set() (return one)
+    if devices_dictionary[start].__contains__("out") and "fft" in visited and "dac" in visited:
+        return 1
+    else:
+        sumaraza = 0
+        for one_path in range(len(devices_dictionary[start])):
+            new_step = devices_dictionary[start].pop()
+            if new_step == "out":
+                print("next step is out!!!!!")
+            if new_step not in visited:
+                sumaraza += part_2(file_name, new_step, step + 1, visited + [new_step])
+                print((sumaraza, one_path, devices_dictionary[start]), step)
+
+        return sumaraza
+
+
+print(part_2(s2))
 
 
 def test_part_1():
@@ -35,7 +84,7 @@ def test_part_1():
 
 
 def test_part_2():
-    assert part_2(s) == None
+    assert part_2(s2) == 2
 
 
 if __name__ == "__main__":
@@ -43,4 +92,4 @@ if __name__ == "__main__":
     # large_input = read_lines(l)
     print(small_input)
     print("First part: ", part_1(l))
-    print("Second part: ", part_2(l))
+    # print("Second part: ", part_2(l))
